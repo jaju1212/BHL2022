@@ -1,3 +1,5 @@
+#include <LiquidCrystal.h>
+
 
 #define PIN A0
 #define PILL_TAKEN_PIN 12
@@ -19,13 +21,13 @@ void loop() {
   
 }
 
+//Function prototypes
 
 bool checkIfTaken(void){
   bool val = digitalRead(PILL_TAKEN_PIN);
   return val;
 }
 
-void reminderDiode(void){
-  
-  
+void reminderDiodeState(int state){
+  digitalWrite(REMINDER_DIODE, state);
 }
