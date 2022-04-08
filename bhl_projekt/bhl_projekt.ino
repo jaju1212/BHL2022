@@ -1,4 +1,7 @@
 #include<Servo.h>
+#include <WiFiNINA.h>
+#include <ThingSpeak.h>
+#include "mario.h"
 
 #define PIN A0
 #define STEP_PIN 9
@@ -16,11 +19,28 @@
 #define Pill_2_deg 150 //kąt o ktory ma się obrocic wał silnika, aby pobrac tabletke z dozownika 1
 #define Pill_2_dir 0 //kierunek w ktorym ma sie obrocic wal silnika, aby pobrac tabletke 1
 
+char ssid[] = "Ecuador";
+char pass[] = "slodkiekotki69";
+
+
+int status = WL_IDLE_STATUS;
+WiFiClient client;
 
 
 void setup() {
   pinMode(STEP_PIN, OUTPUT);
   pinMode(DIR_PIN, OUTPUT);
+
+  playMario();
+
+  while (status != WL_CONNECTED)
+  {
+    Serial.print("Lacze sie z siecia");
+    Serial.println(ssid);
+    status = WiFi.begin(ssid, pass);
+    delay(5000);
+  }
+  ThingSpeak.begin(client);
 
   Serial.begin(9600);
 
@@ -30,17 +50,16 @@ void setup() {
   pill_1_state = dose_Pill(2, 1);
   pill_2_state = dose_Pill(1, 2);
 
-  while(pill_1_state == 1 && pill_2_state == 1){
-    if(PIR_movement() != 0)
-    {
-      buzzer;
-    }
-    
-    if(wzieto_piksa()){
-      pill_1_state = 0;
-      pill_2_state = 0;
-    }
-  }
+//  while(pill_1_state == 1 && pill_2_state == 1){
+//    
+//      playMario();
+//    
+//    
+//    if(wzieto_piksa()){
+//      pill_1_state = 0;
+//      pill_2_state = 0;
+//    }
+//  }
 
 }
 
