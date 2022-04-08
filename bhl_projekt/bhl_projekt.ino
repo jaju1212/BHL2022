@@ -8,6 +8,8 @@
 #define PILL_TAKEN_PIN 12
 #define REMINDER_DIODE 10
 #define DIODE A0
+#define PIR_PIN 12
+#define DIODE_THRESHOLD 700
 
 #define Pill_1_deg 150 //kąt o ktory ma się obrocic wał silnika, aby pobrac tabletke z dozownika 1
 #define Pill_1_dir 1 //kierunek w ktorym ma sie obrocic wal silnika, aby pobrac tabletke 1
@@ -19,17 +21,32 @@
 void setup() {
   pinMode(STEP_PIN, OUTPUT);
   pinMode(DIR_PIN, OUTPUT);
-  
+
   Serial.begin(9600);
 
-  //dose_Pill(1, 2);
-  //dose_Pill(2, 1);
+  bool pill_1_state = 0;
+  bool pill_2_state = 0;
+  
+  pill_1_state = dose_Pill(2, 1);
+  pill_2_state = dose_Pill(1, 2);
+
+  while(pill_1_state == 1 && pill_2_state == 1){
+    if(PIR_movement() != 0)
+    {
+      buzzer;
+    }
+    
+    if(wzieto_piksa()){
+      pill_1_state = 0;
+      pill_2_state = 0;
+    }
+  }
 
 }
 
 void loop() {
-Serial.println(analogRead(A0));
-delay(100);
+  Serial.println(analogRead(A0));
+  delay(100);
 
 
 }
@@ -45,7 +62,7 @@ void reminderDiodeState(int state) {
   digitalWrite(REMINDER_DIODE, state);
 }
 
-void dose_Pill(int label, int n_pill) {  //8000 imp=360deg
+bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
   switch (label) {
     case 1:
       for (int j = 0; j < n_pill; j++)
@@ -59,7 +76,7 @@ void dose_Pill(int label, int n_pill) {  //8000 imp=360deg
           digitalWrite(STEP_PIN, LOW);
           delayMicroseconds(100);
         }
-        
+
         digitalWrite(DIR_PIN, LOW);
         for (int i = 0; i < 3333; i++)
         {
@@ -68,9 +85,9 @@ void dose_Pill(int label, int n_pill) {  //8000 imp=360deg
           digitalWrite(STEP_PIN, LOW);
           delayMicroseconds(100);
         }
-        while(analogRead(DIODE)==HIGH)
+        while (analogRead(DIODE) > DIODE_THRESHOLD)
         {
-          
+
         }
       }
       break;
@@ -86,7 +103,7 @@ void dose_Pill(int label, int n_pill) {  //8000 imp=360deg
           digitalWrite(STEP_PIN, LOW);
           delayMicroseconds(100);
         }
-        
+
         digitalWrite(DIR_PIN, HIGH);
         for (int i = 0; i < 3333; i++)
         {
@@ -95,20 +112,19 @@ void dose_Pill(int label, int n_pill) {  //8000 imp=360deg
           digitalWrite(STEP_PIN, LOW);
           delayMicroseconds(100);
         }
-        while(digitalRead(DIODE)==HIGH)
+        while (analogRead(DIODE) > DIODE_THRESHOLD)
         {
-          
         }
+
       }
       break;
 
     default:
       break;
   }
-
-
-
+  return 1;
 }
+
 //void dose_Pill_2(int n_pil) {  //8000 imp=360deg
 //  for (int j = 0; j < n_pill; j++)
 //  {
@@ -131,3 +147,17 @@ void dose_Pill(int label, int n_pill) {  //8000 imp=360deg
 //    }
 //  }
 //}
+
+bool PIR_movement(void) {
+  bool state = 0;
+  if (PIR_PIN == HIGH) {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+
+
+
+}
