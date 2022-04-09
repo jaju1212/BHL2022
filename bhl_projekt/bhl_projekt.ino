@@ -1,7 +1,9 @@
 #include<Servo.h>
 #include <WiFiNINA.h>
-#include <ThingSpeak.h>
 #include "mario.h"
+
+#include <ThingSpeak.h>
+
 
 #define STEP_PIN 9
 #define DIR_PIN 10
@@ -21,15 +23,16 @@
 
 #define PILL_STATE_CHANNEL 7
 
-char ssid[] = "iPhone (Jan)";
+char ssid[] = "xdddd";
 char pass[] = "kapusta15";
+WiFiClient client;
 
 const char APIwrite[] = "GGSHY5MPHFJSSG9P";
 const char APIread[] = "48G5FHW46CJGUS54";
 unsigned long ch_num = 1699255;
 
 int status = WL_IDLE_STATUS;
-WiFiClient client;
+
 
 int notes = sizeof(melody) / sizeof(melody[0]) / 2;
 
@@ -48,19 +51,31 @@ void setup() {
   pinMode(DIR_PIN, OUTPUT);
 
   pinMode(PILL_TAKEN_PIN, INPUT_PULLUP);
+
+
+
+
   attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, LOW);
 
-  while (status != WL_CONNECTED)
-  {
-    Serial.print("Lacze sie z siecia");
-    Serial.println(ssid);
-    status = WiFi.begin(ssid, pass);
-    Serial.println(status);
-    delay(5000);
+  String fv = WiFi.firmwareVersion();
+  if (fv != "1.0.0") {
+    Serial.println("Please upgrade the firmware");
   }
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print("Lacze sie z siecia ");
+    Serial.println(ssid);
+    WiFi.begin(ssid, pass);
+    Serial.println(WiFi.status());
+    delay(5000);
+
+  }
+  Serial.println("\nConnected.");
   ThingSpeak.begin(client);
 
-
+  delay(5000);
+  ThingSpeak.setStatus("");
 
   bool pill_1_state = 0;
   bool pill_2_state = 0;
@@ -129,7 +144,7 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
         }
       }
       break;
-     
+
     case 2:
       for (int j = 0; j < n_pill; j++)
       {
@@ -170,16 +185,20 @@ void ISR_handler(void) {
 
 int ThingSend(int field, int value) {
   ThingSpeak.setField(field, value);
-  if (ThingSpeak.writeFields(ch_num, APIwrite) == 200) {
+  ThingSpeak.setField(4, 8);
+  int x = ThingSpeak.writeFields(ch_num, APIwrite);
+
+  if (x == 200) {
     Serial.println("data sent");
     return true;
   }
   else
   {
     Serial.println("error while sending data");
+    Serial.println(x);
     return false;
   }
-  
+
 }
 
 //void pillTaken()
