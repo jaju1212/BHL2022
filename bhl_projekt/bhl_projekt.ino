@@ -1,6 +1,6 @@
 #include<Servo.h>
 #include <WiFiNINA.h>
-//#include <ThingSpeak.h>
+#include <ThingSpeak.h>
 #include "mario.h"
 
 #define STEP_PIN 9
@@ -19,20 +19,17 @@
 #define Pill_2_deg 150 //kąt o ktory ma się obrocic wał silnika, aby pobrac tabletke z dozownika 1
 #define Pill_2_dir 0 //kierunek w ktorym ma sie obrocic wal silnika, aby pobrac tabletke 1
 
-char ssid[] = "Ecuador";
-char pass[] = "slodkiekotki69";
+#define PILL_STATE_CHANNEL 7
 
-// change this to make the song slower or faster
-int tempo = 200;
+char ssid[] = "iPhone (Jan)";
+char pass[] = "kapusta15";
 
-// change this to whichever pin you want to use
-int buzzer = 6;
+const char APIwrite[] = "GGSHY5MPHFJSSG9P";
+const char APIread[] = "48G5FHW46CJGUS54";
+unsigned long ch_num = 1699255;
 
-// notes of the moledy followed by the duration.
-// a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
-// !!negative numbers are used to represent dotted notes,
-// so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
-//int melody[] = {
+int status = WL_IDLE_STATUS;
+WiFiClient client;
 
 int notes = sizeof(melody) / sizeof(melody[0]) / 2;
 
@@ -41,58 +38,54 @@ int wholenote = (60000 * 4) / (int)tempo;
 
 int divider = 0, noteDuration = 0;
 
-
 volatile int ISR_flag = 0;
 
-//int status = WL_IDLE_STATUS;
-//WiFiClient client;
-
-
 void setup() {
+  Serial.begin(9600);
   pinMode(STEP_PIN, OUTPUT);
   pinMode(REMINDER_DIODE, OUTPUT);
+  reminderDiodeState(1);
   pinMode(DIR_PIN, OUTPUT);
-  
+
   pinMode(PILL_TAKEN_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, LOW);
-  
-  
-//
-//  while (status != WL_CONNECTED)
-//  {
-//    Serial.print("Lacze sie z siecia");
-//    Serial.println(ssid);
-//    status = WiFi.begin(ssid, pass);
-//    delay(5000);
-//  }
-//  ThingSpeak.begin(client);
 
-  Serial.begin(9600);
+  while (status != WL_CONNECTED)
+  {
+    Serial.print("Lacze sie z siecia");
+    Serial.println(ssid);
+    status = WiFi.begin(ssid, pass);
+    Serial.println(status);
+    delay(5000);
+  }
+  ThingSpeak.begin(client);
+
+
 
   bool pill_1_state = 0;
   bool pill_2_state = 0;
-  
+
   pill_1_state = dose_Pill(0, 0);
   pill_2_state = dose_Pill(0, 0);
 
-  while(pill_1_state == 1 && pill_2_state == 1){
-    
-      playMario();
-      
-      reminderDiodeState(1);
-    
-    
-    if(checkIfTaken() != 0){
+  ThingSend(PILL_STATE_CHANNEL, pill_1_state);
+
+  while (pill_1_state == 1 && pill_2_state == 1) {
+
+    playMario();
+
+    reminderDiodeState(0);
+
+    if (checkIfTaken() != 0) {
       pill_1_state = 0;
       pill_2_state = 0;
+      ThingSend(PILL_STATE_CHANNEL, pill_1_state);
+
     }
   }
 }
 
 void loop() {
-  
-  delay(100);
-
 
 }
 
@@ -136,6 +129,7 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
         }
       }
       break;
+     
     case 2:
       for (int j = 0; j < n_pill; j++)
       {
@@ -170,8 +164,22 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
   return 1;
 }
 
-void ISR_handler(void){
+void ISR_handler(void) {
   ISR_flag = 1;
+}
+
+int ThingSend(int field, int value) {
+  ThingSpeak.setField(field, value);
+  if (ThingSpeak.writeFields(ch_num, APIwrite) == 200) {
+    Serial.println("data sent");
+    return true;
+  }
+  else
+  {
+    Serial.println("error while sending data");
+    return false;
+  }
+  
 }
 
 //void pillTaken()
@@ -200,43 +208,43 @@ void ISR_handler(void){
 
 void playMario()
 {
-    // actualTime = millis();
+  // actualTime = millis();
 
-    // if (actualTime - temp_time > tempo)
-    // {
+  // if (actualTime - temp_time > tempo)
+  // {
 
-        // iterate over the notes of the melody.
-        // Remember, the array is twice the number of notes (notes + durations)
-        for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2)
-        {
-           if(ISR_flag == 0){
+  // iterate over the notes of the melody.
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2)
+  {
+    if (ISR_flag == 0) {
 
-            // calculates the duration of each note
-            divider = melody[thisNote + 1];
-            if (divider > 0)
-            {
-                // regular note, just proceed
-                noteDuration = (wholenote) / divider;
-            }
-            else if (divider < 0)
-            {
-                // dotted notes are represented with negative durations!!
-                noteDuration = (wholenote) / abs(divider);
-                noteDuration *= 1.5; // increases the duration in half for dotted notes
-            }
+      // calculates the duration of each note
+      divider = melody[thisNote + 1];
+      if (divider > 0)
+      {
+        // regular note, just proceed
+        noteDuration = (wholenote) / divider;
+      }
+      else if (divider < 0)
+      {
+        // dotted notes are represented with negative durations!!
+        noteDuration = (wholenote) / abs(divider);
+        noteDuration *= 1.5; // increases the duration in half for dotted notes
+      }
 
-            // we only play the note for 90% of the duration, leaving 10% as a pause
-            tone(buzzer, melody[thisNote], noteDuration * 0.9);
+      // we only play the note for 90% of the duration, leaving 10% as a pause
+      tone(buzzer, melody[thisNote], noteDuration * 0.9);
 
-            // Wait for the specief duration before playing the next note.
-            delay(tempo);
+      // Wait for the specief duration before playing the next note.
+      delay(tempo);
 
-            // stop the waveform generation before the next note.
-            noTone(buzzer);
-           }
-           else
-           {
-               return;
-           }
-        }
+      // stop the waveform generation before the next note.
+      noTone(buzzer);
+    }
+    else
+    {
+      return;
+    }
+  }
 }

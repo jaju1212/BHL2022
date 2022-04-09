@@ -96,6 +96,13 @@
 
 // void playMario(volatile int *ISR_flag);
 
+// change this to make the song slower or faster
+static const int tempo = 200;
+
+// change this to whichever pin you want to use
+static const int buzzer = 6;
+
+
 static const int melody[] = {
 
     // Super Mario Bros theme
