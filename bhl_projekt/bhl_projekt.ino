@@ -1,4 +1,3 @@
-
 #include <WiFiNINA.h>
 #include "mario.h"
 #include "secrets.h"
