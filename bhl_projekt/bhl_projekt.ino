@@ -52,53 +52,17 @@ void setup() {
 
   pinMode(PILL_TAKEN_PIN, INPUT_PULLUP);
 
-
-
-
   attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, LOW);
 
-  String fv = WiFi.firmwareVersion();
-  if (fv != "1.0.0") {
-    Serial.println("Please upgrade the firmware");
-  }
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.print("Lacze sie z siecia ");
-    Serial.println(ssid);
-    WiFi.begin(ssid, pass);
-    Serial.println(WiFi.status());
-    delay(5000);
-
-  }
-  Serial.println("\nConnected.");
-  ThingSpeak.begin(client);
-
+  //prezentacja
+  two_pills_dosing(2, 1);
   delay(5000);
-  ThingSpeak.setStatus("");
-
-  bool pill_1_state = 0;
-  bool pill_2_state = 0;
-
-  pill_1_state = dose_Pill(0, 0);
-  pill_2_state = dose_Pill(0, 0);
-
-  ThingSend(PILL_STATE_CHANNEL, pill_1_state);
-
-  while (pill_1_state == 1 && pill_2_state == 1) {
-
-    playMario();
-
-    reminderDiodeState(0);
-
-    if (checkIfTaken() != 0) {
-      pill_1_state = 0;
-      pill_2_state = 0;
-      ThingSend(PILL_STATE_CHANNEL, pill_1_state);
-
-    }
+  two_pills_dosing(0, 1);
+  delay(5000);
+  two_pills_dosing(1, 0);
+  
   }
-}
+
 
 void loop() {
 
@@ -266,4 +230,48 @@ void playMario()
       return;
     }
   }
+}
+
+void two_pills_dosing(int pill_1_quantity, int pill_2_quantity){
+  bool pill_1_state = 0;
+  bool pill_2_state = 0;
+
+  pill_1_state = dose_Pill(1, pill_1_quantity);
+  pill_2_state = dose_Pill(2, pill_2_quantity);
+
+//  ThingSend(PILL_STATE_CHANNEL, pill_1_state);
+
+  while (pill_1_state == 1 && pill_2_state == 1) {
+ //dopóki pigułki nie zostały zabrane z koszyczka
+    playMario();
+
+    reminderDiodeState(0);
+
+    if (checkIfTaken() != 0) {
+      pill_1_state = 0;
+      pill_2_state = 0;
+      ThingSend(PILL_STATE_CHANNEL, pill_1_state);
+    }
+}
+
+void WIFISetup(void){
+  String fv = WiFi.firmwareVersion();
+  if (fv != "1.0.0") {
+    Serial.println("Please upgrade the firmware");
+  }
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print("Lacze sie z siecia ");
+    Serial.println(ssid);
+    WiFi.begin(ssid, pass);
+    Serial.println(WiFi.status());
+    delay(5000);
+
+  }
+  Serial.println("\nConnected.");
+  ThingSpeak.begin(client);
+
+  delay(5000);
+  ThingSpeak.setStatus("");
 }
