@@ -1,6 +1,6 @@
 #include<Servo.h>
 #include <WiFiNINA.h>
-#include <ThingSpeak.h>
+//#include <ThingSpeak.h>
 #include "mario.h"
 
 #define STEP_PIN 9
@@ -44,8 +44,8 @@ int divider = 0, noteDuration = 0;
 
 volatile int ISR_flag = 0;
 
-int status = WL_IDLE_STATUS;
-WiFiClient client;
+//int status = WL_IDLE_STATUS;
+//WiFiClient client;
 
 
 void setup() {

@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include "mario.h"
 
+
 // #define NOTE_B0 31
 // #define NOTE_C1 33
 // #define NOTE_CS1 35
@@ -102,10 +103,10 @@
 
 
 // change this to make the song slower or faster
-int tempo = 200;
+// int tempo = 200;
 
-// change this to whichever pin you want to use
-int buzzer = 6;
+// // change this to whichever pin you want to use
+// int buzzer = 6;
 
 // notes of the moledy followed by the duration.
 // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
@@ -831,4 +832,4 @@ int buzzer = 6;
 //            }
 //         }
    // }
-}
+

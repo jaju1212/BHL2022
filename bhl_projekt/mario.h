@@ -96,7 +96,7 @@
 
 // void playMario(volatile int *ISR_flag);
 
-int melody[] = {
+static const int melody[] = {
 
     // Super Mario Bros theme
     // Score available at https://musescore.com/user/2123/scores/2145
@@ -760,6 +760,7 @@ int melody[] = {
     -2,
 
 };
+
 
 
 #endif
