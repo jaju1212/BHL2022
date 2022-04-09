@@ -1,4 +1,4 @@
-#include<Servo.h>
+
 #include <WiFiNINA.h>
 #include "mario.h"
 #include "secrets.h"
@@ -7,9 +7,10 @@
 #define STEP_PIN 9
 #define DIR_PIN 10
 #define Pill_1 1 //indeks pigułki
-#define Pill_2 2
+#define Pill_2 23
 #define PILL_TAKEN_PIN 12 //krańcówka
 #define REMINDER_DIODE 3 //dioda przypominająca
+//buzzer pin 6
 
 #define DIODE A0 //fotorezystor
 #define PIR_PIN 12
@@ -22,12 +23,15 @@
 
 //Kanały Thingspeak
 #define PILL_STATE_CHANNEL 7
+#define PILL_1_1_FIELD 1
+#define PILL_1_2_FIELD 3
+#define PILL_1_3_FIELD 5
 
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 WiFiClient client;
 
-int DEMO = 0;
+int DEMO = 1;
 
 int krancowka_state = 0;
 
@@ -54,11 +58,11 @@ void setup() {
   pinMode(DIR_PIN, OUTPUT);
   pinMode(PILL_TAKEN_PIN, INPUT_PULLUP);
 
-  //  WIFISetup();
+//    WIFISetup();
 
   attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, CHANGE);
 
-  //  delay(5000);
+//   delay(15000);
 
 
   //prezentacja
@@ -74,15 +78,10 @@ void setup() {
 
 
 void loop() {
-  if (ISR_flag == 1) {
-    reminderDiodeState(0);
-    delay(300);
-    ISR_flag = 0;
-  }
-  else
-  {
-    reminderDiodeState(1);
-  }
+  
+//  int val = ThingDownload(2);
+//  Serial.println(val);
+//  delay(1000);
 }
 
 //Function prototypes
@@ -102,25 +101,10 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
       for (int j = 0; j < n_pill; j++)
       {
         digitalWrite(DIR_PIN, HIGH);
-        
-        
-        //potrząsanie
-        int state = 0;
-        for (int j = 0; j < 2; j++) {
-          state = !state;
-          digitalWrite(DIR_PIN, state);
-        
-        
-          for (int i = 0; i < 44; i++)
-          {
-            digitalWrite(STEP_PIN, HIGH);
-            delayMicroseconds(10);
-            digitalWrite(STEP_PIN, LOW);
-            delayMicroseconds(10);
 
-          }
-        }
-                digitalWrite(DIR_PIN, HIGH);
+        stepperShake();
+        
+        digitalWrite(DIR_PIN, HIGH);
 
 
         for (int i = 0; i < 3333; i++)
@@ -130,6 +114,8 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
           digitalWrite(STEP_PIN, LOW);
           delayMicroseconds(100);
         }
+
+        stepperShake();
 
         digitalWrite(DIR_PIN, LOW);
         for (int i = 0; i < 3333; i++)
@@ -151,22 +137,8 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
       {
         digitalWrite(DIR_PIN, LOW);
 
-        //potrząsanie
-        int state = 0;
-        for (int j = 0; j < 2; j++) {
-          state = !state;
-          digitalWrite(DIR_PIN, state);
+        stepperShake();
         
-        
-          for (int i = 0; i < 44; i++)
-          {
-            digitalWrite(STEP_PIN, HIGH);
-            delayMicroseconds(10);
-            digitalWrite(STEP_PIN, LOW);
-            delayMicroseconds(10);
-
-          }
-        }
         digitalWrite(DIR_PIN, LOW);
 
         for (int i = 0; i < 3333; i++)
@@ -176,6 +148,8 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
           digitalWrite(STEP_PIN, LOW);
           delayMicroseconds(100);
         }
+
+        stepperShake();
 
         digitalWrite(DIR_PIN, HIGH);
         for (int i = 0; i < 3333; i++)
@@ -337,4 +311,26 @@ void WIFISetup(void) {
 
   delay(5000);
   ThingSpeak.setStatus("");
+}
+
+void stepperShake(void) {
+  //potrząsanie
+  int state = 0;
+  for (int j = 0; j < 2; j++) {
+    state = !state;
+    digitalWrite(DIR_PIN, state);
+    for (int i = 0; i < 44; i++)
+    {
+      digitalWrite(STEP_PIN, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(STEP_PIN, LOW);
+      delayMicroseconds(10);
+
+    }
+  }
+}
+
+int ThingDownload(int field){
+  int val = ThingSpeak.readIntField(ch_num, field);
+  return val;    
 }
