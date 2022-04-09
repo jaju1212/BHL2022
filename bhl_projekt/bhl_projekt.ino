@@ -11,9 +11,16 @@
 #define REMINDER_DIODE 3 //dioda przypominająca
 //buzzer pin 6
 
+#define CALIBRATION_PIN 13
+
+#define MODE_PIN 2
+
+#define STEP_SPEED 300
+#define STEP_IMP 3500
+
 #define DIODE A0 //fotorezystor
 #define PIR_PIN 12
-#define DIODE_THRESHOLD 920 //próg ADC wykrywania spadającej pigułki
+#define DIODE_THRESHOLD 100 //próg ADC wykrywania spadającej pigułki
 
 #define Pill_1_deg 150 //kąt o ktory ma się obrocic wał silnika, aby pobrac tabletke z dozownika 1
 #define Pill_1_dir 1 //kierunek w ktorym ma sie obrocic wal silnika, aby pobrac tabletke 1
@@ -57,30 +64,39 @@ void setup() {
   pinMode(DIR_PIN, OUTPUT);
   pinMode(PILL_TAKEN_PIN, INPUT_PULLUP);
 
-//    WIFISetup();
+  pinMode(CALIBRATION_PIN, INPUT_PULLUP);
+  pinMode(MODE_PIN, INPUT);
+
+  WIFISetup();
 
   attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, CHANGE);
 
-//   delay(15000);
+//  delay(5000);
 
 
   //prezentacja
   if (DEMO == 1) {
-    two_pills_dosing(2, 1);
-    delay(5000);
-    two_pills_dosing(0, 1);
-    delay(5000);
-    two_pills_dosing(1, 0);
+
+    calibration();
+
+
+
+    while (ThingDownload(1) != 0)
+    {
+      two_pills_dosing(2, 1);
+      delay(5000);
+    }
+
   }
 
 }
 
 
 void loop() {
-  
-//  int val = ThingDownload(2);
-//  Serial.println(val);
-//  delay(1000);
+
+  //  int val = ThingDownload(2);
+  //  Serial.println(val);
+  //  delay(1000);
 }
 
 //Function prototypes
@@ -102,31 +118,31 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
         digitalWrite(DIR_PIN, HIGH);
 
         stepperShake();
-        
+
         digitalWrite(DIR_PIN, HIGH);
 
 
-        for (int i = 0; i < 3333; i++)
+        for (int i = 0; i < STEP_IMP; i++)
         {
           digitalWrite(STEP_PIN, HIGH);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
           digitalWrite(STEP_PIN, LOW);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
         }
 
         stepperShake();
 
         digitalWrite(DIR_PIN, LOW);
-        for (int i = 0; i < 3333; i++)
+        for (int i = 0; i < STEP_IMP; i++)
         {
           digitalWrite(STEP_PIN, HIGH);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
           digitalWrite(STEP_PIN, LOW);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
         }
         while (analogRead(DIODE) > DIODE_THRESHOLD)
         {
-
+          stepperShake();
         }
       }
       break;
@@ -137,29 +153,30 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
         digitalWrite(DIR_PIN, LOW);
 
         stepperShake();
-        
+
         digitalWrite(DIR_PIN, LOW);
 
-        for (int i = 0; i < 3333; i++)
+        for (int i = 0; i < STEP_IMP; i++)
         {
           digitalWrite(STEP_PIN, HIGH);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
           digitalWrite(STEP_PIN, LOW);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
         }
 
         stepperShake();
 
         digitalWrite(DIR_PIN, HIGH);
-        for (int i = 0; i < 3333; i++)
+        for (int i = 0; i < STEP_IMP; i++)
         {
           digitalWrite(STEP_PIN, HIGH);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
           digitalWrite(STEP_PIN, LOW);
-          delayMicroseconds(100);
+          delayMicroseconds(STEP_SPEED);
         }
         while (analogRead(DIODE) > DIODE_THRESHOLD)
         {
+          stepperShake();
         }
 
       }
@@ -197,30 +214,6 @@ int ThingSend(int field, int value) {
 
 }
 
-//void pillTaken()
-//void dose_Pill_2(int n_pil) {  //8000 imp=360deg
-//  for (int j = 0; j < n_pill; j++)
-//  {
-//    digitalWrite(DIR_PIN, LOW);
-//
-//
-//    for (int i = 0; i < 3333; i++)
-//    {
-//      digitalWrite(STEP_PIN, HIGH);
-//      delayMicroseconds(100);
-//      digitalWrite(STEP_PIN, LOW);
-//      delayMicroseconds(100);
-//    }
-//    digitalWrite(DIR_PIN, HIGH);
-//    for (int i = 0; i < 3333; i++)
-//    {
-//      digitalWrite(STEP_PIN, HIGH);
-//      delayMicroseconds(100);
-//      digitalWrite(STEP_PIN, LOW);
-//      delayMicroseconds(100);
-//    }
-//  }
-//}
 
 void playMario()
 {
@@ -314,22 +307,51 @@ void WIFISetup(void) {
 
 void stepperShake(void) {
   //potrząsanie
-  int state = 0;
-  for (int j = 0; j < 2; j++) {
-    state = !state;
-    digitalWrite(DIR_PIN, state);
-    for (int i = 0; i < 44; i++)
-    {
-      digitalWrite(STEP_PIN, HIGH);
-      delayMicroseconds(10);
-      digitalWrite(STEP_PIN, LOW);
-      delayMicroseconds(10);
 
-    }
-  }
+
+
+  //    digitalWrite(DIR_PIN, 0);
+  //    for (int i = 0; i < 44; i++)
+  //    {
+  //      digitalWrite(STEP_PIN, HIGH);
+  //      delayMicroseconds(100);
+  //      digitalWrite(STEP_PIN, LOW);
+  //      delayMicroseconds(100);
+  //
+  //    }
+  //
+  //     digitalWrite(DIR_PIN, 1);
+  //    for (int i = 0; i < 44; i++)
+  //    {
+  //      digitalWrite(STEP_PIN, HIGH);
+  //      delayMicroseconds(100);
+  //      digitalWrite(STEP_PIN, LOW);
+  //      delayMicroseconds(100);
+  //
+  //    }
 }
 
-int ThingDownload(int field){
+
+int ThingDownload(int field) {
   int val = ThingSpeak.readIntField(ch_num, field);
-  return val;    
+  return val;
+}
+
+void calibration()
+{
+  while (true) {
+    if (!digitalRead(CALIBRATION_PIN))
+    {
+      for (int i = 0; i < 100; i++) {
+        digitalWrite(STEP_PIN, HIGH);
+        delayMicroseconds(300);
+        digitalWrite(STEP_PIN, LOW);
+        delayMicroseconds(300);
+      }
+    }
+    if (digitalRead(MODE_PIN))
+  {
+    break;
+  }
+}
 }
