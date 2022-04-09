@@ -109,7 +109,7 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
         for (int j = 0; j < 2; j++) {
           state = !state;
           digitalWrite(DIR_PIN, state);
-        }
+        
         
           for (int i = 0; i < 44; i++)
           {
@@ -120,6 +120,8 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
 
           }
         }
+                digitalWrite(DIR_PIN, HIGH);
+
 
         for (int i = 0; i < 3333; i++)
         {
@@ -147,6 +149,24 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
     case 2:
       for (int j = 0; j < n_pill; j++)
       {
+        digitalWrite(DIR_PIN, LOW);
+
+        //potrząsanie
+        int state = 0;
+        for (int j = 0; j < 2; j++) {
+          state = !state;
+          digitalWrite(DIR_PIN, state);
+        
+        
+          for (int i = 0; i < 44; i++)
+          {
+            digitalWrite(STEP_PIN, HIGH);
+            delayMicroseconds(10);
+            digitalWrite(STEP_PIN, LOW);
+            delayMicroseconds(10);
+
+          }
+        }
         digitalWrite(DIR_PIN, LOW);
 
         for (int i = 0; i < 3333; i++)
