@@ -1,9 +1,8 @@
 #include<Servo.h>
 #include <WiFiNINA.h>
 #include "mario.h"
-
+#include "secrets.h"
 #include <ThingSpeak.h>
-
 
 #define STEP_PIN 9
 #define DIR_PIN 10
@@ -14,25 +13,29 @@
 
 #define DIODE A0 //fotorezystor
 #define PIR_PIN 12
-#define DIODE_THRESHOLD 700 //próg ADC wykrywania spadającej pigułki
+#define DIODE_THRESHOLD 920 //próg ADC wykrywania spadającej pigułki
 
 #define Pill_1_deg 150 //kąt o ktory ma się obrocic wał silnika, aby pobrac tabletke z dozownika 1
 #define Pill_1_dir 1 //kierunek w ktorym ma sie obrocic wal silnika, aby pobrac tabletke 1
 #define Pill_2_deg 150 //kąt o ktory ma się obrocic wał silnika, aby pobrac tabletke z dozownika 1
 #define Pill_2_dir 0 //kierunek w ktorym ma sie obrocic wal silnika, aby pobrac tabletke 1
 
+//Kanały Thingspeak
 #define PILL_STATE_CHANNEL 7
 
-char ssid[] = "xdddd";
-char pass[] = "kapusta15";
+char ssid[] = SECRET_SSID;
+char pass[] = SECRET_PASS;
 WiFiClient client;
 
-const char APIwrite[] = "GGSHY5MPHFJSSG9P";
-const char APIread[] = "48G5FHW46CJGUS54";
+int DEMO = 0;
+
+int krancowka_state = 0;
+
 unsigned long ch_num = 1699255;
+const char * APIwrite = SECRET_WRITE_APIKEY;
+const char * APIread = SECRET_READ_APIKEY;
 
 int status = WL_IDLE_STATUS;
-
 
 int notes = sizeof(melody) / sizeof(melody[0]) / 2;
 
@@ -47,25 +50,39 @@ void setup() {
   Serial.begin(9600);
   pinMode(STEP_PIN, OUTPUT);
   pinMode(REMINDER_DIODE, OUTPUT);
-  reminderDiodeState(1);
+  reminderDiodeState(0);
   pinMode(DIR_PIN, OUTPUT);
-
   pinMode(PILL_TAKEN_PIN, INPUT_PULLUP);
 
-  attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, LOW);
+  //  WIFISetup();
+
+  attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, CHANGE);
+
+  //  delay(5000);
+
 
   //prezentacja
-  two_pills_dosing(2, 1);
-  delay(5000);
-  two_pills_dosing(0, 1);
-  delay(5000);
-  two_pills_dosing(1, 0);
-  
+  if (DEMO == 1) {
+    two_pills_dosing(2, 1);
+    delay(5000);
+    two_pills_dosing(0, 1);
+    delay(5000);
+    two_pills_dosing(1, 0);
   }
+
+}
 
 
 void loop() {
-
+  if (ISR_flag == 1) {
+    reminderDiodeState(0);
+    delay(300);
+    ISR_flag = 0;
+  }
+  else
+  {
+    reminderDiodeState(1);
+  }
 }
 
 //Function prototypes
@@ -85,6 +102,24 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
       for (int j = 0; j < n_pill; j++)
       {
         digitalWrite(DIR_PIN, HIGH);
+        
+        
+        //potrząsanie
+        int state = 0;
+        for (int j = 0; j < 2; j++) {
+          state = !state;
+          digitalWrite(DIR_PIN, state);
+        }
+        
+          for (int i = 0; i < 44; i++)
+          {
+            digitalWrite(STEP_PIN, HIGH);
+            delayMicroseconds(10);
+            digitalWrite(STEP_PIN, LOW);
+            delayMicroseconds(10);
+
+          }
+        }
 
         for (int i = 0; i < 3333; i++)
         {
@@ -145,11 +180,15 @@ bool dose_Pill(int label, int n_pill) {  //8000 imp=360deg
 
 void ISR_handler(void) {
   ISR_flag = 1;
+
+  krancowka_state = digitalRead(PILL_TAKEN_PIN);
+  Serial.println(krancowka_state);
+
 }
 
 int ThingSend(int field, int value) {
   ThingSpeak.setField(field, value);
-  ThingSpeak.setField(4, 8);
+
   int x = ThingSpeak.writeFields(ch_num, APIwrite);
 
   if (x == 200) {
@@ -171,6 +210,7 @@ int ThingSend(int field, int value) {
 //  {
 //    digitalWrite(DIR_PIN, LOW);
 //
+//
 //    for (int i = 0; i < 3333; i++)
 //    {
 //      digitalWrite(STEP_PIN, HIGH);
@@ -191,11 +231,6 @@ int ThingSend(int field, int value) {
 
 void playMario()
 {
-  // actualTime = millis();
-
-  // if (actualTime - temp_time > tempo)
-  // {
-
   // iterate over the notes of the melody.
   // Remember, the array is twice the number of notes (notes + durations)
   for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2)
@@ -232,29 +267,37 @@ void playMario()
   }
 }
 
-void two_pills_dosing(int pill_1_quantity, int pill_2_quantity){
+void two_pills_dosing(int pill_1_quantity, int pill_2_quantity) {
   bool pill_1_state = 0;
   bool pill_2_state = 0;
 
   pill_1_state = dose_Pill(1, pill_1_quantity);
   pill_2_state = dose_Pill(2, pill_2_quantity);
 
-//  ThingSend(PILL_STATE_CHANNEL, pill_1_state);
+  //  ThingSend(PILL_STATE_CHANNEL, pill_1_state);
 
   while (pill_1_state == 1 && pill_2_state == 1) {
- //dopóki pigułki nie zostały zabrane z koszyczka
+    //dopóki pigułki nie zostały zabrane z koszyczka
     playMario();
 
-    reminderDiodeState(0);
 
-    if (checkIfTaken() != 0) {
+    reminderDiodeState(1);
+
+    if (ISR_flag == 1) {
       pill_1_state = 0;
       pill_2_state = 0;
       ThingSend(PILL_STATE_CHANNEL, pill_1_state);
+      reminderDiodeState(0);
+      ISR_flag = 0;
     }
+
+
+  }
 }
 
-void WIFISetup(void){
+void WIFISetup(void) {
+  ThingSpeak.begin(client);
+
   String fv = WiFi.firmwareVersion();
   if (fv != "1.0.0") {
     Serial.println("Please upgrade the firmware");
@@ -270,7 +313,7 @@ void WIFISetup(void){
 
   }
   Serial.println("\nConnected.");
-  ThingSpeak.begin(client);
+
 
   delay(5000);
   ThingSpeak.setStatus("");
