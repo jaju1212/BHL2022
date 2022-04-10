@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   sodipodi:docname="AszstentSeniora.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.7198092"
+     inkscape:cx="381.35106"
+     inkscape:cy="385.51883"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g22308" />
+  <defs
+     id="defs2">
+    <rect
+       x="530.47066"
+       y="522.61183"
+       width="245.58827"
+       height="113.95296"
+       id="rect33640" />
+    <rect
+       x="47.152947"
+       y="520.64713"
+       width="222.01179"
+       height="168.96473"
+       id="rect24566" />
+    <rect
+       x="-575.15241"
+       y="65.295081"
+       width="87.523193"
+       height="91.690964"
+       id="rect4428" />
+  </defs>
+  <g
+     inkscape:label="Warstwa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text4426"
+       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;white-space:pre;shape-inside:url(#rect4428)" />
+    <g
+       id="g22308"
+       transform="matrix(0.55734923,0,0,0.55734923,50.192145,97.65092)">
+      <g
+         id="g1431"
+         transform="matrix(2.2864797,0,0,2.2864797,-42.205844,-75.641139)"
+         style="image-rendering:auto">
+        <g
+           id="g163-70"
+           transform="matrix(0.5,0,0,0.5,8.0816834,9.1844061)">
+          <circle
+             style="fill:#000000;fill-rule:evenodd;stroke-width:0.265612"
+             id="path31-5"
+             cx="50"
+             cy="50"
+             r="50" />
+          <circle
+             style="fill:#ffffff;stroke-width:0.339176"
+             id="path55-9"
+             cx="50"
+             cy="50"
+             r="45" />
+        </g>
+        <g
+           id="g163-1"
+           transform="matrix(0.5,0,0,0.5,78.655942,11.022277)">
+          <circle
+             style="fill:#000000;fill-rule:evenodd;stroke-width:0.265612"
+             id="path31-66"
+             cx="50"
+             cy="50"
+             r="50" />
+          <circle
+             style="fill:#ffffff;stroke-width:0.339176"
+             id="path55-2"
+             cx="50"
+             cy="50"
+             r="45" />
+        </g>
+        <circle
+           id="path342"
+           style="fill:#ffffff;stroke:#000000;stroke-width:0.264583"
+           cx="49.254951"
+           cy="23.157179"
+           r="0.048960533" />
+        <circle
+           id="path344"
+           style="fill:#ffffff;stroke:#000000;stroke-width:0.264583"
+           cx="49.254951"
+           cy="23.157179"
+           r="0.048960533" />
+        <rect
+           style="fill:#000000;stroke-width:0.229172"
+           id="rect1318"
+           width="25.178833"
+           height="6.3406558"
+           x="55.779392"
+           y="26.55724" />
+      </g>
+      <g
+         id="g22138">
+        <g
+           id="g22073"
+           transform="matrix(1.1331839,0,0,0.7546258,2.0865305,20.617356)"
+           style="fill:#ff2a2a">
+          <circle
+             style="fill:#ff2a2a;stroke-width:0.264583"
+             id="path21898"
+             cx="96.120667"
+             cy="63.406559"
+             r="27.751854" />
+          <circle
+             style="fill:#ff2a2a;stroke-width:0.264583"
+             id="path21898-9"
+             cx="96.304451"
+             cy="177.90594"
+             r="27.751854" />
+          <rect
+             style="fill:#ff2a2a;stroke-width:0.264583"
+             id="rect21966"
+             width="55.503704"
+             height="116.15347"
+             x="68.368805"
+             y="63.222771" />
+        </g>
+        <g
+           id="g22073-6"
+           transform="matrix(0.879993,0,0,0.6632549,26.970538,32.047527)"
+           style="fill:#ffffff">
+          <circle
+             style="fill:#ffffff;stroke-width:0.264583"
+             id="path21898-0"
+             cx="96.120667"
+             cy="63.406559"
+             r="27.751854" />
+          <circle
+             style="fill:#ffffff;stroke-width:0.264583"
+             id="path21898-9-6"
+             cx="96.304451"
+             cy="177.90594"
+             r="27.751854" />
+          <rect
+             style="fill:#ffffff;stroke-width:0.264583"
+             id="rect21966-2"
+             width="55.503704"
+             height="116.15347"
+             x="68.368805"
+             y="63.222771" />
+        </g>
+        <text
+           xml:space="preserve"
+           transform="matrix(0.47471732,0,0,0.47471732,-59.276667,-170.54258)"
+           id="text24564"
+           style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect24566);fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="47.152344"
+             y="591.42773"
+             id="tspan37946"><tspan
+   style="font-size:80px"
+   id="tspan37944">A</tspan>systent</tspan></text>
+        <text
+           xml:space="preserve"
+           transform="matrix(0.47471732,0,0,0.47471732,-93.229769,-170.29186)"
+           id="text33638"
+           style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect33640);fill:#000000;fill-opacity:1;stroke:none"><tspan
+             x="530.4707"
+             y="593.39258"
+             id="tspan37950"><tspan
+   style="font-size:80px"
+   id="tspan37948">S</tspan>eniora</tspan></text>
+      </g>
+      <rect
+         style="fill:#ff0000;stroke-width:0.195153"
+         id="rect22162"
+         width="56.444138"
+         height="15.255956"
+         x="83.863266"
+         y="103.83165" />
+    </g>
+  </g>
+</svg>
