@@ -67,11 +67,11 @@ void setup() {
   pinMode(CALIBRATION_PIN, INPUT_PULLUP);
   pinMode(MODE_PIN, INPUT);
 
-  WIFISetup();
+  //  WIFISetup();
 
   attachInterrupt(digitalPinToInterrupt(PILL_TAKEN_PIN), ISR_handler, CHANGE);
 
-//  delay(5000);
+  //  delay(5000);
 
 
   //prezentacja
@@ -79,11 +79,12 @@ void setup() {
 
     calibration();
 
+    two_pills_dosing(2, 1);
 
 
     while (ThingDownload(1) != 0)
     {
-      two_pills_dosing(2, 1);
+
       delay(5000);
     }
 
@@ -350,8 +351,8 @@ void calibration()
       }
     }
     if (digitalRead(MODE_PIN))
-  {
-    break;
+    {
+      break;
+    }
   }
-}
 }
