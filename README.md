@@ -1,6 +1,6 @@
 # BHL2022
 # Inteligentny Asystent Seniora
-<img src="/obrazki/AszstentSenioraBiale.svg" alt="logo" width="200"/>
+<img src="/obrazki/AszstentSenioraBiale.png" alt="logo" width="200"/>
 
 Pandemia COVID-19 pokazała, że telemedycyna sprawdza się w codziennym użytku. Proponujemy automatyczny dozownik leków - urządzenie, które ułatwi starszym pacjentom funkcjonowanie, a także usprawni proces leczenia.
 ## Funkcje
